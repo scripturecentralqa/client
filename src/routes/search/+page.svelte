@@ -159,7 +159,7 @@
 	{#each data.results as result}
 		<div class="result">
 			<a href={result.url}>{result.title}</a><br />
-			<div class="author-date">{result.author} {result.month}/{result.year}</div>
+			<div class="author-date">{result.author}</div> <!-- Remove the month/year display-->
 			<div>{result.text}</div>
 			<div>
 				<span
