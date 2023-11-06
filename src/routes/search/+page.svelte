@@ -114,7 +114,7 @@
 	}
 
 
-// converting the markdown to html
+ //converting the markdown to html
 	function convertMarkdownToHtml(markdownContent: string) {
     	let converter = new showdown.Converter();
     	let html = converter.makeHtml(markdownContent);
@@ -183,7 +183,7 @@
 	{#each data.results as result}
 		<div class="result">
 			<a href={result.url}>{result.title}</a><br />
-			<div class="author-date">{result.author} {result.month}/{result.year}</div>
+			<!--<div class="author-date">{result.author}</div>-->
 			<div>{@html convertAndSanitize(result.text)}</div> <!--sanitized the html before displaying-->
 			<div>
 				<span
@@ -191,7 +191,7 @@
 					class:rated-up={result.ratedUp}
 					title="Relevant"
 					on:keypress={() => rateUpResult(result)}
-					on:click={() => rateUpResult(result)}><IconThumbsUp /></span
+					on:click={() => rateUpResult(result)}><IconThumbsUp /></span 
 				>
 				<span
 					class="rating"
