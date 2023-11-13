@@ -9,7 +9,7 @@ import { getUserId } from '$lib/server/utils'
 let redis: Redis
 let ratelimit: Ratelimit
 
-if (!building) {
+if (!building) { 
 	redis = new Redis({
 		url: env.UPSTASH_REDIS_REST_URL,
 		token: env.UPSTASH_REDIS_REST_TOKEN
