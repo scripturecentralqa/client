@@ -131,7 +131,7 @@
 		let sanitizedHTML = sanitizeHtmlContent(htmlContent);
 		return sanitizedHTML
 	}
-
+// adding footnotes
 	function addFootnotes(text: string) {
 		const regex = /\[\^([^\]]+)\]/g;
 
@@ -141,6 +141,32 @@
 		return sanitizedHTML		
 	}
 
+//removing markdown
+	function removeMarkdown(text: string) {
+  		const patterns = [
+    		/\!\[(.*?)\]\(.*?\)/g, // Images
+    		/\[(.*?)\]\(.*?\)/g, // Links
+    		/\`{1,3}(.*?)\`{1,3}/g, // Inline code and code blocks
+    		/(?:^|\n) *\> *(.*)/g, // Blockquotes
+    		/(?:^|\n) *\#{1,6} */g, // Headers
+    		/(?:^|\n)\-{3,}\s/g, // Horizontal rules
+    		/(?:^|\n)\={3,}\s/g, // Horizontal rules
+    		/\n{2,}/g, // Extra newlines
+    		/ {2,}/g, // Extra spaces
+  	];
+
+  	patterns.forEach((pattern) => {
+    	text = text.replace(pattern, '');
+  	});
+
+  	return text;
+	}
+	function displaySanitizedText() {
+		let sanitizedText = removeMarkdown(data.text);
+		let sanitizedHTML = sanitizeHtmlContent(sanitizedText);
+		return sanitizedText;
+	}
+	
 </script>
 
 <h4 class="header"><a href="/">Scripture Central QA</a></h4>
@@ -193,7 +219,7 @@
 			<a id="search_result_{result.index}" href={result.url}>{result.index}. {result.title}</a><br />
 
 			<!--<div class="author-date">{result.author}</div>-->
-			<div>{@html convertAndSanitize(result.text)}</div> <!--sanitized the html before displaying-->
+			<div>{@html convertAndSanitize(removeMarkdown(result.text))}</div> <!--sanitized the html before displaying-->
 			<div>
 				<span
 					class="rating"
