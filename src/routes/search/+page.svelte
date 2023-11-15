@@ -132,6 +132,14 @@
 		return sanitizedHTML
 	}
 
+	function addFootnotes(text: string) {
+		const regex = /\[\^([^\]]+)\]/g;
+
+		// Use the replace method to replace all matches with the desired format
+		const resultString = text.replace(regex,'<a href="#search_result_$1">$1</a>')
+		let sanitizedHTML = sanitizeHtmlContent(resultString);
+		return sanitizedHTML		
+	}
 
 </script>
 
@@ -160,7 +168,7 @@
 	<div class="answer-header">
 		Computer-generated answers may be incorrect. Please review the results below.
 	</div>
-	<div>{data.answer}</div>
+	<div>{@html addFootnotes(data.answer)}</div>
 	<div>
 		<span
 			class="rating"
@@ -181,8 +189,9 @@
 {#if data.results}
 	<h4>Results</h4>
 	{#each data.results as result}
-		<div class="result">
-			<a href={result.url}>{result.title}</a><br />
+		<div class="result">	  
+			<a id="search_result_{result.index}" href={result.url}>{result.index}. {result.title}</a><br />
+
 			<!--<div class="author-date">{result.author}</div>-->
 			<div>{@html convertAndSanitize(result.text)}</div> <!--sanitized the html before displaying-->
 			<div>
@@ -209,6 +218,7 @@
 		<IconLoading /> &nbsp; Please wait
 	</p>
 {/if}
+
 
 <style>
 	.author-date {
