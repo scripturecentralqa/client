@@ -191,9 +191,17 @@
 
 {#if data.answer}
 	<h4>Computer-generated answer</h4>
+	{#if data.results.length > 0} 
 	<div class="answer-header">
+		<!-- Displays the existing message if search results are available -->
 		Computer-generated answers may be incorrect. Please review the results below.
 	</div>
+	{:else}
+		<!-- change the message if no search results are available -->
+		<div class="answer-header">
+			We were unable to find the answer in our database. Here is what ChatGPT says.
+		</div>
+{/if}
 	<div>{@html addFootnotes(data.answer)}</div>
 	<div>
 		<span
@@ -212,11 +220,15 @@
 		>
 	</div>
 {/if}
-{#if data.results}
+{#if data.results.length > 0}
 	<h4>Results</h4>
 	{#each data.results as result}
-		<div class="result">	  
-			<a id="search_result_{result.index}" href={result.url}>{result.index}. {result.title}</a><br />
+		<div class="result">
+			{#if result.url} <!--check if the result.url exists-->
+			<a id="search_result_{result.index}" href={result.url}>{result.index}. {result.title}</a><br /> <!--display the title and index as an anchor-->
+			{:else}
+			<span id="search_result_{result.index}">{result.index}. {result.title}</span><br /> <!--display the title and index without an anchor-->
+			{/if}
 
 			<!--<div class="author-date">{result.author}</div>-->
 			<div>{@html convertAndSanitize(removeMarkdown(result.text))}</div> <!--sanitized the html and removed markdown before displaying-->
