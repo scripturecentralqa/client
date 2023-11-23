@@ -17,7 +17,7 @@ if (!building) {
 
 	ratelimit = new Ratelimit({
 		redis,
-		limiter: Ratelimit.slidingWindow(40, '86400 s')
+		limiter: Ratelimit.slidingWindow(100, '86400 s')
 	})
 }
 
@@ -41,8 +41,7 @@ export const load: PageServerLoad = async (event) => {
 				429,
 				`
           Too many requests. 
-          Generating answers is somewhat expensive 
-          so currently we set a limit on how many queries can be performed each day.
+          Generating answers is somewhat expensive so we set a limit of 100 queries per day.
           Please try again after this time tomorrow.
       `
 			)
@@ -50,6 +49,14 @@ export const load: PageServerLoad = async (event) => {
 	}
 
 	const requestUrl = `${env.SERVER_HOST}/search?q=${encodeURIComponent(q)}`
-	const res = await event.fetch(requestUrl)
-	return res.json()
+	try {
+		const response = await event.fetch(requestUrl)
+		if (response.ok) {
+			return response.json();
+		} else {
+			console.log('Error:', requestUrl, response.status);
+		}
+	} catch (error) {
+		console.error('Fetch error:', requestUrl, error);
+	}
 }
