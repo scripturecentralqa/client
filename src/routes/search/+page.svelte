@@ -308,4 +308,8 @@
 	.rated-down {
 		color: red;
 	}
+
+	.url {
+		font-size: smaller;
+	}
 </style>
