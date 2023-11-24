@@ -226,6 +226,7 @@
 		<div class="result">
 			{#if result.url} <!--check if the result.url exists-->
 			<a id="search_result_{result.index}" href={result.url}>{result.index}. {result.title}</a><br /> <!--display the title and index as an anchor-->
+			<a href={result.url} class="url" target="_blank">{result.url}</a><br /> <!-- Display the url as a clickable link -->
 			{:else}
 			<span id="search_result_{result.index}">{result.index}. {result.title}</span><br /> <!--display the title and index without an anchor-->
 			{/if}
