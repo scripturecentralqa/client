@@ -5,6 +5,8 @@
 	import type { PageData } from './$types'
 	import showdown from 'showdown'; // showdown imported
 	import sanitizeHtml from 'sanitize-html'; //sanitize-html imported
+	import { env } from '$env/dynamic/public'
+	import { onMount } from 'svelte'
 
 
 	export let data: PageData
@@ -136,7 +138,7 @@
 		const regex = /\[\^([^\]]+)\]/g;
 
 		// Use the replace method to replace all matches with the desired format
-		const resultString = text.replace(regex,'<a href="#search_result_$1">$1</a>')
+		const resultString = text.replace(regex,'<a href="#search_result_$1">$1</a> ')
 		let sanitizedHTML = sanitizeHtmlContent(resultString);
 		return sanitizedHTML		
 	}
@@ -144,28 +146,37 @@
 //removing markdown
 	function removeMarkdown(text: string) {
   		const patterns = [
-    		/\!\[(.*?)\]\(.*?\)/g, // Images
-    		/\[(.*?)\]\(.*?\)/g, // Links
-    		/\`{1,3}(.*?)\`{1,3}/g, // Inline code and code blocks
-    		/(?:^|\n) *\> *(.*)/g, // Blockquotes
-    		/(?:^|\n) *\#{1,6} */g, // Headers
-    		/(?:^|\n)\-{3,}(?:$|\n)/g, // Horizontal rules
-    		/(?:^|\n)\={3,}(?:$|\n)/g, // Horizontal rules
+    		/!\[(.*?)]\(.*?\)/g, // Images
+    		/\[(.*?)]\(.*?\)/g, // Links
+    		/`{1,3}(.*?)`{1,3}/g, // Inline code and code blocks
+    		/(?:^|\n) *> *(.*)/g, // Blockquotes
+    		/(?:^|\n) *#{1,6} */g, // Headers
+    		/(?:^|\n)-{3,}(?:$|\n)/g, // Horizontal rules
+    		/(?:^|\n)={3,}(?:$|\n)/g, // Horizontal rules
     		/\n{2,}/g, // Extra newlines
     		/ {2,}/g, // Extra spaces
-  	];
+  		];
 
-  	patterns.forEach((pattern) => {
-    	text = text.replace(pattern, '');
-  	});
+		patterns.forEach((pattern) => {
+			text = text.replace(pattern, '');
+		});
 
-  	return text;
+		return text;
 	}
-	function displaySanitizedText() {
-		let sanitizedText = removeMarkdown(data.text);
-		let sanitizedHTML = sanitizeHtmlContent(sanitizedText);
-		return sanitizedText;
-	}
+
+	let answer = ""
+
+	onMount(() => {
+    	// put your code here
+		const evtSource = new EventSource( `${env.PUBLIC_SERVER_HOST}/stream_answer?key=${data.key}`);
+		evtSource.onmessage = function(event) {
+			answer += event.data;
+		}
+		evtSource.onerror = function() {
+			evtSource.close();
+		}
+    });
+
 
 </script>
 
@@ -189,7 +200,7 @@
 	</div>
 </form>
 
-{#if data.answer}
+{#if answer}
 	<h4>Computer-generated answer</h4>
 	{#if data.results && data.results.length > 0}
 	<div class="answer-header">
@@ -202,7 +213,7 @@
 			We were unable to find the answer in our database. Here is what ChatGPT says.
 		</div>
 {/if}
-	<div>{@html addFootnotes(data.answer)}</div>
+	<div>{@html addFootnotes(answer)}</div>
 	<div>
 		<span
 			class="rating"
@@ -260,9 +271,7 @@
 
 
 <style>
-	.author-date {
-		font-size: smaller;
-	}
+	
 	.answer-header {
 		margin-top: -2rem;
 		margin-bottom: 2rem;
@@ -274,7 +283,7 @@
 
 	#search-wrapper {
 		position: relative;
-	}
+	} 
 
 	#search-wrapper .reset {
 		position: absolute;
