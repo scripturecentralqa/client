@@ -202,7 +202,7 @@
 
 {#if answer}
 	<h4>Computer-generated answer</h4>
-	{#if data.results.length > 0} 
+	{#if data.results && data.results.length > 0}
 	<div class="answer-header">
 		<!-- Displays the existing message if search results are available -->
 		Computer-generated answers may be incorrect. Please review the results below.
@@ -231,7 +231,7 @@
 		>
 	</div>
 {/if}
-{#if data.results.length > 0}
+{#if data.results && data.results.length > 0}
 	<h4>Results</h4>
 	{#each data.results as result}
 		<div class="result">
