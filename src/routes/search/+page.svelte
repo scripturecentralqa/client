@@ -138,7 +138,7 @@
 		const regex = /\[\^([^\]]+)\]/g;
 
 		// Use the replace method to replace all matches with the desired format
-		const resultString = text.replace(regex,'<a href="#search_result_$1">$1</a>')
+		const resultString = text.replace(regex,'<a href="#search_result_$1">$1</a> ')
 		let sanitizedHTML = sanitizeHtmlContent(resultString);
 		return sanitizedHTML		
 	}
@@ -146,47 +146,34 @@
 //removing markdown
 	function removeMarkdown(text: string) {
   		const patterns = [
-    		/\!\[(.*?)\]\(.*?\)/g, // Images
-    		/\[(.*?)\]\(.*?\)/g, // Links
-    		/\`{1,3}(.*?)\`{1,3}/g, // Inline code and code blocks
-    		/(?:^|\n) *\> *(.*)/g, // Blockquotes
-    		/(?:^|\n) *\#{1,6} */g, // Headers
-    		/(?:^|\n)\-{3,}(?:$|\n)/g, // Horizontal rules
-    		/(?:^|\n)\={3,}(?:$|\n)/g, // Horizontal rules
+    		/!\[(.*?)]\(.*?\)/g, // Images
+    		/\[(.*?)]\(.*?\)/g, // Links
+    		/`{1,3}(.*?)`{1,3}/g, // Inline code and code blocks
+    		/(?:^|\n) *> *(.*)/g, // Blockquotes
+    		/(?:^|\n) *#{1,6} */g, // Headers
+    		/(?:^|\n)-{3,}(?:$|\n)/g, // Horizontal rules
+    		/(?:^|\n)={3,}(?:$|\n)/g, // Horizontal rules
     		/\n{2,}/g, // Extra newlines
     		/ {2,}/g, // Extra spaces
-  	];
+  		];
 
-  	patterns.forEach((pattern) => {
-    	text = text.replace(pattern, '');
-  	});
+		patterns.forEach((pattern) => {
+			text = text.replace(pattern, '');
+		});
 
-  	return text;
-	}
-	function displaySanitizedText() {
-		let sanitizedText = removeMarkdown(data.text);
-		let sanitizedHTML = sanitizeHtmlContent(sanitizedText);
-		return sanitizedText;
+		return text;
 	}
 
-	// function to fetch and stream the answer
-
-	//async function streamAnswer(key: string) {
-		//const streamAnswer = await fetch (
-			//`${env.PUBLIC_SERVER_HOST}/stream_answer?key=${key}`
-		//)
-	//}
 	let answer = ""
-	//streamAnswer(data.key)
-	
-	
 
 	onMount(() => {
     	// put your code here
-		console.log ("key", data.key)
 		const evtSource = new EventSource( `${env.PUBLIC_SERVER_HOST}/stream_answer?key=${data.key}`);
 		evtSource.onmessage = function(event) {
-			console.log("message", event.data);
+			answer += event.data;
+		}
+		evtSource.onerror = function() {
+			evtSource.close();
 		}
     });
 
@@ -226,7 +213,7 @@
 			We were unable to find the answer in our database. Here is what ChatGPT says.
 		</div>
 {/if}
-	<div>{@html addFootnotes(data.answer)}</div>
+	<div>{@html addFootnotes(answer)}</div>
 	<div>
 		<span
 			class="rating"
