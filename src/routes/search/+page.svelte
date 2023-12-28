@@ -5,6 +5,8 @@
 	import type { PageData } from './$types'
 	import showdown from 'showdown'; // showdown imported
 	import sanitizeHtml from 'sanitize-html'; //sanitize-html imported
+	import { env } from '$env/dynamic/public'
+	import { onMount } from 'svelte'
 
 
 	export let data: PageData
@@ -167,6 +169,28 @@
 		return sanitizedText;
 	}
 
+	// function to fetch and stream the answer
+
+	//async function streamAnswer(key: string) {
+		//const streamAnswer = await fetch (
+			//`${env.PUBLIC_SERVER_HOST}/stream_answer?key=${key}`
+		//)
+	//}
+	let answer = ""
+	//streamAnswer(data.key)
+	
+	
+
+	onMount(() => {
+    	// put your code here
+		console.log ("key", data.key)
+		const evtSource = new EventSource( `${env.PUBLIC_SERVER_HOST}/stream_answer?key=${data.key}`);
+		evtSource.onmessage = function(event) {
+			console.log("message", event.data);
+		}
+    });
+
+
 </script>
 
 <h4 class="header"><a href="/">Scripture Central QA</a></h4>
@@ -189,7 +213,7 @@
 	</div>
 </form>
 
-{#if data.answer}
+{#if answer}
 	<h4>Computer-generated answer</h4>
 	{#if data.results.length > 0} 
 	<div class="answer-header">
@@ -260,9 +284,7 @@
 
 
 <style>
-	.author-date {
-		font-size: smaller;
-	}
+	
 	.answer-header {
 		margin-top: -2rem;
 		margin-bottom: 2rem;
@@ -274,7 +296,7 @@
 
 	#search-wrapper {
 		position: relative;
-	}
+	} 
 
 	#search-wrapper .reset {
 		position: absolute;

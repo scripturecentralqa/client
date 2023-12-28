@@ -49,7 +49,7 @@ export const load: PageServerLoad = async (event) => {
 		}
 	}
 
-	const requestUrl = `${env.SERVER_HOST}/search?q=${encodeURIComponent(q)}`
+	const requestUrl = `${env.SERVER_HOST}/search_results?q=${encodeURIComponent(q)}`
 	const res = await event.fetch(requestUrl)
 	return res.json()
 }
