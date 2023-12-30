@@ -6,7 +6,6 @@
 	import showdown from 'showdown'; // showdown imported
 	import sanitizeHtml from 'sanitize-html'; //sanitize-html imported
 	import { env } from '$env/dynamic/public'
-	import { onMount } from 'svelte'
 
 
 	export let data: PageData
@@ -165,18 +164,22 @@
 	}
 
 	let answer = ""
+	let answerKey = ""
 
-	onMount(() => {
-    	// put your code here
-		const evtSource = new EventSource( `${env.PUBLIC_SERVER_HOST}/stream_answer?key=${data.key}`);
+	function streamAnswer(key: string) {
+		console.log('key=', key);
+		answer = "";
+		const evtSource = new EventSource( `${env.PUBLIC_SERVER_HOST}/stream_answer?key=${key}`);
 		evtSource.onmessage = function(event) {
 			answer += event.data;
 		}
 		evtSource.onerror = function() {
 			evtSource.close();
 		}
-    });
+	}
 
+	$: answerKey = data.key
+	$: streamAnswer(answerKey);
 
 </script>
 
@@ -200,7 +203,7 @@
 	</div>
 </form>
 
-{#if answer}
+{#if answer && data && data.results}
 	<h4>Computer-generated answer</h4>
 	{#if data.results.length > 0} 
 	<div class="answer-header">
@@ -231,7 +234,7 @@
 		>
 	</div>
 {/if}
-{#if data.results.length > 0}
+{#if data && data.results && data.results.length > 0}
 	<h4>Results</h4>
 	{#each data.results as result}
 		<div class="result">
@@ -263,7 +266,7 @@
 		</div>
 	{/each}
 {/if}
-{#if data.loading}
+{#if data && data.loading}
 	<p>
 		<IconLoading /> &nbsp; Please wait
 	</p>
