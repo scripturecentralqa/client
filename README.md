@@ -7,10 +7,11 @@ Scripture Central Question-Answering Client
 
 # Installation
 
-First, create a .env file with three lines: 
-- a SERVER_HOST variable that points to a running server instance, such as `SERVER_HOST=http://127.0.0.1:8000`
-- an UPSTASH_REDIS_REST_URL that points to an https://upstash.io redis instance
-- an UPSTASH_REDIS_REST_TOKEN that cointains an upstash token
+First, create a .env file with four lines: 
+- a SERVER\_HOST variable that points to a running server instance, such as `SERVER_HOST=http://127.0.0.1:8000`
+- a PUBLIC\_SERVER\_HOST variable that points to the same place
+- an UPSTASH\_REDIS\_REST\_URL that points to an https://upstash.io redis instance
+- an UPSTASH\_REDIS\_REST\_TOKEN that cointains an upstash token
 
 Then run `npm install` or `pnpm install`
 
